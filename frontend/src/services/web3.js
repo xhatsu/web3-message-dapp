@@ -12,7 +12,7 @@ export const getAvailableWallets = () => {
     wallets.push({ id: 'metamask', name: 'MetaMask', icon: '🦊' });
   }
   
-  if (window.taho) {
+  if (window.ethereum?.isTaho) {
     wallets.push({ id: 'taho', name: 'Taho', icon: '🎩' });
   }
   

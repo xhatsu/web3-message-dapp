@@ -46,6 +46,8 @@ export const userApi = {
     api.put('/users/profile', { username, avatar, bio }),
   searchUsers: (query, limit = 10) =>
     api.get(`/users/search/${query}?limit=${limit}`),
+  sendFirstMessage: (recipient, content) =>
+    api.post('/users/send-message', { recipient, content }),
 };
 
 export default api;

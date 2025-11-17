@@ -61,11 +61,16 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid Ethereum address" });
     }
 
-    // Find user and verify nonce is in message
-    const user = await User.findOne({ address: address.toLowerCase() });
+    // Find user or auto-create new user
+    let user = await User.findOne({ address: address.toLowerCase() });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      // Auto-register new user
+      user = new User({
+        address: address.toLowerCase(),
+        nonce: Math.random().toString(36).substring(2, 15),
+      });
+      await user.save();
     }
 
     // Verify signature

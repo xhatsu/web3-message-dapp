@@ -5,6 +5,7 @@ import { useMessageStore } from '../store/messageStore';
 import { messageApi } from '../services/api';
 import ConversationList from '../components/ConversationList';
 import ChatWindow from '../components/ChatWindow';
+import NewConversation from '../components/NewConversation';
 import './Chat.css';
 import { LogOut, Plus } from 'lucide-react';
 
@@ -15,6 +16,7 @@ function Chat() {
     useMessageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showNewConversation, setShowNewConversation] = useState(false);
 
   useEffect(() => {
     loadConversations();
@@ -47,8 +49,13 @@ function Chat() {
   };
 
   const handleNewConversation = () => {
-    setSelectedUser(null);
-    setCurrentConversation(null);
+    setShowNewConversation(true);
+  };
+
+  const handleConversationStart = (newConversation) => {
+    setConversations([...conversations, newConversation]);
+    setSelectedUser(newConversation);
+    setCurrentConversation(newConversation);
   };
 
   return (
@@ -95,6 +102,13 @@ function Chat() {
       </div>
 
       <div className="chat-main">
+        {showNewConversation && (
+          <NewConversation
+            onClose={() => setShowNewConversation(false)}
+            onConversationStart={handleConversationStart}
+          />
+        )}
+        
         {selectedUser ? (
           <ChatWindow
             conversation={selectedUser}

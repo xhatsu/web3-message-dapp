@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+*.log
+.vscode/
+.idea/
+build/
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+frontend/build/
+backend/node_modules/
+contracts/node_modules/
+frontend/node_modules/
+.next/

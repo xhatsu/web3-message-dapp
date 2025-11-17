@@ -1,0 +1,14 @@
+.app {
+  display: flex;
+  height: 100vh;
+  background: #fff;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #666;
+}

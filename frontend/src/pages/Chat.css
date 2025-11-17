@@ -1,0 +1,143 @@
+.chat-container {
+  display: flex;
+  height: 100vh;
+  background: #fff;
+}
+
+.chat-sidebar {
+  width: 300px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.new-message-btn {
+  background: #667eea;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.new-message-btn:hover {
+  background: #764ba2;
+}
+
+.user-info {
+  padding: 15px 20px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+
+.user-address {
+  color: #666;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.conversations-wrapper {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.conversations-wrapper .loading,
+.conversations-wrapper .empty-state {
+  padding: 30px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.empty-state .small {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.logout-btn {
+  background: #fee;
+  color: #c33;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #fdd;
+}
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.empty-illustration {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.chat-empty h3 {
+  font-size: 20px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.chat-empty p {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    flex-direction: column;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .chat-main {
+    flex: 1;
+  }
+}

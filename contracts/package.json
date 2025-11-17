@@ -1,0 +1,13 @@
+{
+  "name": "web3-message-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for Web3 messaging dApp",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.0",
+    "dotenv": "^16.3.1"
+  },
+  "dependencies": {
+    "ethers": "^6.7.1"
+  }
+}

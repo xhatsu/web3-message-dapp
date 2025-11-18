@@ -52,10 +52,8 @@ function Chat() {
     setShowNewConversation(true);
   };
 
-  const handleConversationStart = (newConversation) => {
-    setConversations([...conversations, newConversation]);
-    setSelectedUser(newConversation);
-    setCurrentConversation(newConversation);
+  const handleConversationStart = () => {
+    loadConversations();
   };
 
   return (

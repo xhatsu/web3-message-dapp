@@ -2,9 +2,16 @@ import React from 'react';
 import './ConversationList.css';
 
 function ConversationList({ conversations, selectedUser, onSelectUser }) {
+  if (!conversations || conversations.length === 0) {
+    return null;
+  }
+
   return (
     <div className="conversation-list">
-      {conversations.map((conv) => (
+      {conversations.map((conv) => {
+        if (!conv || !conv.conversation || !conv.otherUser) return null;
+
+        return (
         <div
           key={conv.conversation._id}
           className={`conversation-item ${
@@ -48,7 +55,8 @@ function ConversationList({ conversations, selectedUser, onSelectUser }) {
 
           {conv.otherUser.isOnline && <div className="online-indicator"></div>}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

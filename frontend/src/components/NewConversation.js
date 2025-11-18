@@ -42,10 +42,10 @@ function NewConversation({ onClose, onConversationStart }) {
 
     try {
       setIsSending(true);
-      const response = await userApi.sendFirstMessage(selectedUser.address, message);
+      await userApi.sendFirstMessage(selectedUser.address, message);
       
       if (onConversationStart) {
-        onConversationStart(response.data);
+        onConversationStart();
       }
       onClose();
     } catch (error) {

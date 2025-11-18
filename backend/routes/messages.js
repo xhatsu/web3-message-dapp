@@ -32,15 +32,35 @@ router.post(
     await message.save();
 
     // Update or create conversation
-    const participants = [sender, recipient].sort();
+    const participants = [sender.toLowerCase(), recipient.toLowerCase()].sort();
+    const participantsKey = participants.join("_");
+    
     let conversation = await Conversation.findOne({
-      participants,
+      participantsKey,
     });
 
     if (!conversation) {
-      conversation = new Conversation({
-        participants,
-      });
+      try {
+        conversation = new Conversation({
+          participants,
+        });
+        await conversation.save();
+      } catch (error) {
+        // Handle duplicate key error - conversation may have been created concurrently
+        if (error.code === 11000) {
+          conversation = await Conversation.findOne({ participantsKey });
+          if (!conversation) {
+            throw new Error("Failed to create or retrieve conversation");
+          }
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    // Ensure conversation exists before proceeding
+    if (!conversation || !conversation._id) {
+      throw new Error("Invalid conversation state");
     }
 
     conversation.lastMessage = message._id;

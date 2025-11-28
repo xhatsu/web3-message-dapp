@@ -3,20 +3,23 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useMessageStore } from '../store/messageStore';
 import { messageApi } from '../services/api';
+import { reconnectWallet } from '../services/web3';
 import ConversationList from '../components/ConversationList';
 import ChatWindow from '../components/ChatWindow';
 import NewConversation from '../components/NewConversation';
+import UserInfoPanel from '../components/UserInfoPanel';
 import './Chat.css';
-import { LogOut, Plus } from 'lucide-react';
+import { LogOut, Plus, RefreshCw } from 'lucide-react';
 
 function Chat() {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user, logout, walletType } = useAuthStore();
   const { conversations, setConversations, setCurrentConversation } =
     useMessageStore();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showNewConversation, setShowNewConversation] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadConversations();
@@ -31,6 +34,20 @@ function Chat() {
       console.error('Failed to load conversations:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRefreshWallet = async () => {
+    setIsRefreshing(true);
+    try {
+      if (user?.address && walletType) {
+        await reconnectWallet(walletType);
+        console.log('Wallet reconnected successfully');
+      }
+    } catch (error) {
+      console.error('Failed to reconnect wallet:', error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -61,20 +78,26 @@ function Chat() {
       <div className="chat-sidebar">
         <div className="sidebar-header">
           <h2>Messages</h2>
-          <button
-            className="new-message-btn"
-            onClick={handleNewConversation}
-            title="New message"
-          >
-            <Plus size={20} />
-          </button>
-        </div>
-
-        <div className="user-info">
-          <div className="user-address">
-            {user?.address?.slice(0, 10)}...
+          <div className="header-buttons">
+            <button
+              className="header-btn refresh-btn"
+              onClick={handleRefreshWallet}
+              title="Reconnect wallet"
+              disabled={isRefreshing}
+            >
+              <RefreshCw size={20} className={isRefreshing ? 'spinning' : ''} />
+            </button>
+            <button
+              className="header-btn new-message-btn"
+              onClick={handleNewConversation}
+              title="New message"
+            >
+              <Plus size={20} />
+            </button>
           </div>
         </div>
+
+        <UserInfoPanel />
 
         <div className="conversations-wrapper">
           {isLoading ? (

@@ -1,127 +1,18 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const asyncHandler = require("express-async-handler");
-const Message = require("../models/Message");
-const Conversation = require("../models/Conversation");
-const User = require("../models/User");
-const authMiddleware = require("../middleware/auth");
-
-/**
- * @route POST /api/messages
- * @desc Create a new message
- * @access Private
- */
-router.post(
-  "/",
-  authMiddleware,
-  asyncHandler(async (req, res) => {
-    const { recipient, content } = req.body;
-    const sender = req.userAddress;
-
-    if (!recipient || !content) {
-      return res.status(400).json({ error: "Recipient and content required" });
-    }
-
-    // Create message
-    const message = new Message({
-      sender,
-      recipient,
-      content,
-    });
-
-    await message.save();
-
-    // Update or create conversation
-    const participants = [sender.toLowerCase(), recipient.toLowerCase()].sort();
-    const participantsKey = participants.join("_");
-    
-    let conversation = await Conversation.findOne({
-      participantsKey,
-    });
-
-    if (!conversation) {
-      try {
-        conversation = new Conversation({
-          participants,
-        });
-        await conversation.save();
-      } catch (error) {
-        // Handle duplicate key error - conversation may have been created concurrently
-        if (error.code === 11000) {
-          conversation = await Conversation.findOne({ participantsKey });
-          if (!conversation) {
-            throw new Error("Failed to create or retrieve conversation");
-          }
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    // Ensure conversation exists before proceeding
-    if (!conversation || !conversation._id) {
-      throw new Error("Invalid conversation state");
-    }
-
-    conversation.lastMessage = message._id;
-    conversation.lastMessageTime = new Date();
-    await conversation.save();
-
-    res.status(201).json({
-      success: true,
-      message: message,
-    });
-  })
-);
-
-/**
- * @route GET /api/messages/conversation/:otherAddress
- * @desc Get messages with a specific user
- * @access Private
- */
-router.get(
-  "/conversation/:otherAddress",
-  authMiddleware,
-  asyncHandler(async (req, res) => {
-    const { otherAddress } = req.params;
-    const userAddress = req.userAddress;
-    const { limit = 50, offset = 0 } = req.query;
-
-    const messages = await Message.find({
-      $or: [
-        { sender: userAddress, recipient: otherAddress },
-        { sender: otherAddress, recipient: userAddress },
-      ],
-      isDeleted: false,
-    })
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .skip(parseInt(offset));
-
-    const total = await Message.countDocuments({
-      $or: [
-        { sender: userAddress, recipient: otherAddress },
-        { sender: otherAddress, recipient: userAddress },
-      ],
-      isDeleted: false,
-    });
-
-    res.json({
-      messages: messages.reverse(),
-      total,
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-    });
-  })
-);
+const asyncHandler = require('express-async-handler');
+const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
+const User = require('../models/User');
+const authMiddleware = require('../middleware/auth');
 
 /**
  * @route GET /api/messages/list
- * @desc Get all conversations for the user
+ * @desc Get all conversations for user
  * @access Private
  */
 router.get(
-  "/list",
+  '/list',
   authMiddleware,
   asyncHandler(async (req, res) => {
     const userAddress = req.userAddress;
@@ -129,21 +20,24 @@ router.get(
     const conversations = await Conversation.find({
       participants: userAddress,
     })
-      .populate("lastMessage")
-      .sort({ lastMessageTime: -1 });
+      .populate('lastMessage')
+      .sort({ lastMessageTime: -1 })
+      .lean();
 
-    // Enrich with user data
+    // Enrich with other user info
     const enrichedConversations = await Promise.all(
       conversations.map(async (conv) => {
-        const otherAddress = conv.participants.find(
-          (addr) => addr !== userAddress
-        );
-        const otherUser = await User.findOne({ address: otherAddress });
+        const otherUserAddress = conv.participants.find((p) => p !== userAddress);
+        const otherUser = await User.findOne({ address: otherUserAddress }).lean();
 
         return {
-          conversation: conv,
+          conversation: {
+            _id: conv._id,
+            participants: conv.participants,
+            lastMessageTime: conv.lastMessageTime,
+          },
           otherUser: {
-            address: otherAddress,
+            address: otherUserAddress,
             username: otherUser?.username || null,
             avatar: otherUser?.avatar || null,
             isOnline: otherUser?.isOnline || false,
@@ -158,81 +52,122 @@ router.get(
 );
 
 /**
- * @route GET /api/messages/:id
- * @desc Get a specific message
+ * @route GET /api/messages/conversation/:otherUserAddress
+ * @desc Get conversation messages with specific user
  * @access Private
  */
 router.get(
-  "/:id",
+  '/conversation/:otherUserAddress',
   authMiddleware,
   asyncHandler(async (req, res) => {
-    const message = await Message.findById(req.params.id);
+    const userAddress = req.userAddress;
+    const otherUserAddress = req.params.otherUserAddress?.toLowerCase();
 
-    if (!message) {
-      return res.status(404).json({ error: "Message not found" });
+    if (!otherUserAddress) {
+      return res.status(400).json({ error: 'Invalid user address' });
     }
 
-    // Check authorization
-    if (
-      message.sender !== req.userAddress &&
-      message.recipient !== req.userAddress
-    ) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
+    // Get messages
+    const messages = await Message.find({
+      $or: [
+        { sender: userAddress, recipient: otherUserAddress },
+        { sender: otherUserAddress, recipient: userAddress },
+      ],
+    })
+      .sort({ createdAt: 1 })
+      .lean();
 
-    res.json({ message });
+    // Get other user info
+    const otherUser = await User.findOne({ address: otherUserAddress }).lean();
+
+    res.json({
+      messages,
+      otherUser: {
+        address: otherUserAddress,
+        username: otherUser?.username || null,
+        isOnline: otherUser?.isOnline || false,
+      },
+    });
   })
 );
 
 /**
- * @route PUT /api/messages/:id/read
- * @desc Mark message as read
+ * @route POST /api/messages/send
+ * @desc Send a message
  * @access Private
  */
-router.put(
-  "/:id/read",
+router.post(
+  '/send',
   authMiddleware,
   asyncHandler(async (req, res) => {
-    const message = await Message.findById(req.params.id);
+    const { recipient, content } = req.body;
+    const sender = req.userAddress;
 
-    if (!message) {
-      return res.status(404).json({ error: "Message not found" });
+    if (!recipient || !content) {
+      return res.status(400).json({ error: 'Missing recipient or content' });
     }
 
-    message.isRead = true;
+    // Create message
+    const message = new Message({
+      sender,
+      recipient: recipient.toLowerCase(),
+      content,
+      transfer: 'none',
+    });
+
     await message.save();
 
-    res.json({ success: true, message });
+    // Update or create conversation
+    const participants = [sender.toLowerCase(), recipient.toLowerCase()].sort();
+    const participantsKey = participants.join('_');
+
+    let conversation = await Conversation.findOne({ participantsKey });
+
+    if (!conversation) {
+      conversation = new Conversation({ participants });
+      await conversation.save();
+    }
+
+    conversation.lastMessage = message._id;
+    conversation.lastMessageTime = new Date();
+    await conversation.save();
+
+    res.status(201).json({
+      success: true,
+      message: {
+        _id: message._id,
+        sender: message.sender,
+        recipient: message.recipient,
+        content: message.content,
+        transfer: message.transfer,
+        createdAt: message.createdAt,
+      },
+    });
   })
 );
 
 /**
- * @route DELETE /api/messages/:id
+ * @route DELETE /api/messages/:messageId
  * @desc Delete a message
  * @access Private
  */
 router.delete(
-  "/:id",
+  '/:messageId',
   authMiddleware,
   asyncHandler(async (req, res) => {
-    const message = await Message.findById(req.params.id);
+    const message = await Message.findById(req.params.messageId);
 
     if (!message) {
-      return res.status(404).json({ error: "Message not found" });
+      return res.status(404).json({ error: 'Message not found' });
     }
 
-    // Check authorization
-    if (
-      message.sender !== req.userAddress &&
-      message.recipient !== req.userAddress
-    ) {
-      return res.status(403).json({ error: "Unauthorized" });
+    if (message.sender !== req.userAddress) {
+      return res.status(403).json({ error: 'Not authorized to delete this message' });
     }
 
-    message.isDeleted = true;
-    await message.save();
+    await Message.findByIdAndDelete(req.params.messageId);
 
-    res.json({ success: true, message: "Message deleted" });
+    res.json({ success: true, message: 'Message deleted' });
   })
 );
 

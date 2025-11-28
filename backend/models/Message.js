@@ -1,57 +1,44 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema(
   {
-    messageId: {
-      type: Number,
-      default: null,
-    },
     sender: {
       type: String,
       required: true,
       lowercase: true,
-      match: /^0x[a-fA-F0-9]{40}$/,
     },
     recipient: {
       type: String,
       required: true,
       lowercase: true,
-      match: /^0x[a-fA-F0-9]{40}$/,
     },
     content: {
       type: String,
       required: true,
     },
-    contentHash: {
+    transfer: {
       type: String,
-      default: null,
+      enum: ['none', 'token', 'nft', 'ether'],
+      default: 'none',
     },
-    isRead: {
-      type: Boolean,
-      default: false,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now,
-    },
-    chainTimestamp: {
-      type: Number,
-      default: null,
-    },
-    transactionHash: {
-      type: String,
-      default: null,
+    transferData: {
+      tokenAddress: String,
+      tokenAmount: String,
+      nftAddress: String,
+      nftTokenId: String,
+      etherAmount: String,
+      transactionHash: String,
+      claimed: {
+        type: Boolean,
+        default: false,
+      },
+      confirmed: {
+        type: Boolean,
+        default: false,
+      },
     },
   },
   { timestamps: true }
 );
 
-// Index for efficient queries
-messageSchema.index({ sender: 1, recipient: 1, createdAt: -1 });
-messageSchema.index({ messageId: 1 });
-
-module.exports = mongoose.model("Message", messageSchema);
+module.exports = mongoose.model('Message', messageSchema);

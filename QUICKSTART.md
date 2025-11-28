@@ -83,7 +83,7 @@ Or run everything at once:
 
 ```bash
 # Terminal 1: Local network
-cd contracts && npx hardhat node
+cd contracts && npx hardhat node --hostname 0.0.0.0
 
 # Terminal 2 (in new terminal)
 cd contracts && npx hardhat run scripts/deploy.js --network localhost

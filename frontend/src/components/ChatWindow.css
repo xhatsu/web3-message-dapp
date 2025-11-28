@@ -137,6 +137,50 @@
   padding: 20px;
   border-top: 1px solid #e0e0e0;
   background: #f9f9f9;
+  align-items: center;
+}
+
+.input-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.transfer-btn {
+  background: #f0f0f0;
+  color: #333;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #ddd;
+  font-size: 18px;
+}
+
+.transfer-btn:hover:not(:disabled) {
+  background: #e0e0e0;
+  transform: scale(1.05);
+  border-color: #999;
+}
+
+.transfer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.transfer-btn.nft-btn:hover:not(:disabled) {
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.transfer-btn.token-btn:hover:not(:disabled) {
+  background: #cfe9ff;
+  border-color: #0d6efd;
 }
 
 .message-input {

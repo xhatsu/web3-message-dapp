@@ -2,7 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useMessageStore } from '../store/messageStore';
 import { messageApi } from '../services/api';
-import { Send, Trash2 } from 'lucide-react';
+import { Send, Trash2, Gift, Coins } from 'lucide-react';
+import QuickTransferModal from './QuickTransferModal';
+import TransferMessage from './TransferMessage';
 import './ChatWindow.css';
 
 function ChatWindow({ conversation, onConversationUpdate }) {
@@ -11,6 +13,7 @@ function ChatWindow({ conversation, onConversationUpdate }) {
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [showTransferModal, setShowTransferModal] = useState(null);
   const messagesEndRef = useRef(null);
 
   const otherAddress = conversation.otherUser.address;
@@ -72,6 +75,11 @@ function ChatWindow({ conversation, onConversationUpdate }) {
     }
   };
 
+  const handleTransferSent = (newMessage) => {
+    addMessage(newMessage);
+    onConversationUpdate();
+  };
+
   return (
     <div className="chat-window">
       <div className="chat-header">
@@ -101,24 +109,32 @@ function ChatWindow({ conversation, onConversationUpdate }) {
                   msg.sender === user?.address ? 'sent' : 'received'
                 }`}
               >
-                <div className="message-bubble">
-                  <div className="message-text">{msg.content}</div>
-                  <div className="message-meta">
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                    {msg.sender === user?.address && (
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteMessage(msg._id)}
-                        title="Delete message"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
+                {msg.transfer && msg.transfer !== 'none' ? (
+                  <TransferMessage
+                    message={msg}
+                    currentUser={user?.address}
+                    onTransferClaimed={loadMessages}
+                  />
+                ) : (
+                  <div className="message-bubble">
+                    <div className="message-text">{msg.content}</div>
+                    <div className="message-meta">
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                      {msg.sender === user?.address && (
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDeleteMessage(msg._id)}
+                          title="Delete message"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ))}
             <div ref={messagesEndRef} />
@@ -135,14 +151,43 @@ function ChatWindow({ conversation, onConversationUpdate }) {
           disabled={isSending}
           className="message-input"
         />
-        <button
-          type="submit"
-          disabled={isSending || !newMessage.trim()}
-          className="send-button"
-        >
-          <Send size={20} />
-        </button>
+        <div className="input-buttons">
+          <button
+            type="button"
+            onClick={() => setShowTransferModal('nft')}
+            disabled={isSending}
+            className="transfer-btn nft-btn"
+            title="Send NFT"
+          >
+            <Gift size={20} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowTransferModal('token')}
+            disabled={isSending}
+            className="transfer-btn token-btn"
+            title="Send Token"
+          >
+            <Coins size={20} />
+          </button>
+          <button
+            type="submit"
+            disabled={isSending || !newMessage.trim()}
+            className="send-button"
+          >
+            <Send size={20} />
+          </button>
+        </div>
       </form>
+
+      {showTransferModal && (
+        <QuickTransferModal
+          recipientAddress={conversation.otherUser.address}
+          transferType={showTransferModal}
+          onClose={() => setShowTransferModal(null)}
+          onTransferSent={handleTransferSent}
+        />
+      )}
     </div>
   );
 }

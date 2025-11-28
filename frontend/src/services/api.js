@@ -29,12 +29,10 @@ export const authApi = {
 // Messages
 export const messageApi = {
   sendMessage: (recipient, content) =>
-    api.post('/messages', { recipient, content }),
+    api.post('/messages/send', { recipient, content }),
   getConversations: () => api.get('/messages/list'),
-  getConversation: (otherAddress, limit = 50, offset = 0) =>
-    api.get(`/messages/conversation/${otherAddress}?limit=${limit}&offset=${offset}`),
-  getMessage: (id) => api.get(`/messages/${id}`),
-  markAsRead: (id) => api.put(`/messages/${id}/read`),
+  getConversation: (otherAddress) =>
+    api.get(`/messages/conversation/${otherAddress}`),
   deleteMessage: (id) => api.delete(`/messages/${id}`),
 };
 

@@ -1,0 +1,204 @@
+.transfer-message {
+  background-color: #f9f9f9;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 8px 0;
+  transition: all 0.2s;
+}
+
+.transfer-message.own {
+  background-color: #e3f2fd;
+  border-color: #4169e1;
+}
+
+.transfer-message.other {
+  background-color: #f5f5f5;
+  border-color: #ddd;
+}
+
+.transfer-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.transfer-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #4169e1;
+  color: white;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.transfer-info {
+  flex: 1;
+}
+
+.transfer-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.transfer-status {
+  font-size: 12px;
+}
+
+.transfer-status .claimed {
+  color: #4caf50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.transfer-status .confirmed {
+  color: #2196f3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.transfer-status .verifying {
+  color: #ff9800;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.transfer-status .pending {
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.transfer-content {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.transfer-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.transfer-details,
+.transfer-tx {
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.detail-row,
+.tx-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.detail-row:last-child,
+.tx-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row > span:first-child,
+.tx-row > span:first-child {
+  font-weight: 500;
+  color: #666;
+  min-width: 70px;
+}
+
+.detail-value,
+.tx-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.detail-value code,
+.tx-value code {
+  background-color: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: #666;
+  word-break: break-all;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4169e1;
+  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.copy-btn:hover {
+  background-color: #f0f0f0;
+  color: #2e52a3;
+}
+
+.claim-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #4169e1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.claim-btn:hover:not(:disabled) {
+  background-color: #315ac1;
+}
+
+.claim-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.na-text {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}

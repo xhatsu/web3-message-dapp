@@ -52,8 +52,8 @@ function Login() {
       const loginResponse = await authApi.login(address, signature, message);
       const { token, user } = loginResponse.data;
 
-      // Store auth data
-      login(user, token);
+      // Store auth data with wallet type
+      login(user, token, selectedWallet);
 
       // Redirect to chat
       navigate('/chat');

@@ -1,198 +1,173 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const asyncHandler = require("express-async-handler");
-const User = require("../models/User");
-const Message = require("../models/Message");
-const Conversation = require("../models/Conversation");
-const authMiddleware = require("../middleware/auth");
+const asyncHandler = require('express-async-handler');
+const User = require('../models/User');
+const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
+const authMiddleware = require('../middleware/auth');
+
+/**
+ * @route GET /api/users/:address
+ * @desc Get user info by address
+ * @access Private
+ */
+router.get(
+  '/:address',
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const address = req.params.address?.toLowerCase();
+
+    if (!address) {
+      return res.status(400).json({ error: 'Address is required' });
+    }
+
+    const user = await User.findOne({ address })
+      .select('address username avatar bio isOnline createdAt updatedAt')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user });
+  })
+);
+
+/**
+ * @route GET /api/users
+ * @desc Get current user info
+ * @access Private
+ */
+router.get(
+  '/',
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const user = await User.findOne({ address: req.userAddress })
+      .select('address username avatar bio isOnline createdAt updatedAt')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user });
+  })
+);
+
+/**
+ * @route GET /api/users/search/:query
+ * @desc Search users by address or username
+ * @access Private
+ */
+router.get(
+  '/search/:query',
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const { query } = req.params;
+
+    if (!query || query.length < 1) {
+      return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    // Search by both address and username
+    const users = await User.find({
+      $or: [
+        { address: { $regex: query, $options: "i" } },
+        { username: { $regex: query, $options: "i" } },
+      ],
+    })
+      .select('address username avatar bio isOnline createdAt')
+      .limit(10)
+      .lean();
+
+    res.json({ users });
+  })
+);
+
+/**
+ * @route PUT /api/users/profile
+ * @desc Update user profile (username, avatar, bio)
+ * @access Private
+ */
+router.put(
+  '/profile',
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const { username, avatar, bio } = req.body;
+
+    const updateData = {};
+    if (username) updateData.username = username;
+    if (avatar) updateData.avatar = avatar;
+    if (bio) updateData.bio = bio;
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { address: req.userAddress },
+      updateData,
+      { new: true }
+    ).lean();
+
+    res.json({ user });
+  })
+);
 
 /**
  * @route POST /api/users/send-message
- * @desc Send first message to a user
+ * @desc Send first message to a user (creates conversation)
  * @access Private
  */
 router.post(
-  "/send-message",
+  '/send-message',
   authMiddleware,
   asyncHandler(async (req, res) => {
     const { recipient, content } = req.body;
     const sender = req.userAddress;
 
     if (!recipient || !content) {
-      return res.status(400).json({ error: "Missing recipient or content" });
+      return res.status(400).json({ error: 'Missing recipient or content' });
     }
 
-    if (sender.toLowerCase() === recipient.toLowerCase()) {
-      return res.status(400).json({ error: "Cannot send message to yourself" });
-    }
-
-    // Check if recipient exists
-    const recipientUser = await User.findOne({
-      address: recipient.toLowerCase(),
-    });
-    if (!recipientUser) {
-      return res.status(404).json({ error: "Recipient not found" });
-    }
-
-    // Check or create conversation
-    const participants = [sender.toLowerCase(), recipient.toLowerCase()].sort();
-    const participantsKey = participants.join("_");
-    
-    let conversation = await Conversation.findOne({
-      participantsKey,
-    });
-
-    if (!conversation) {
-      try {
-        conversation = new Conversation({
-          participants,
-        });
-        await conversation.save();
-      } catch (error) {
-        // Handle duplicate key error - conversation may have been created concurrently
-        if (error.code === 11000) {
-          conversation = await Conversation.findOne({ participantsKey });
-          if (!conversation) {
-            return res.status(501).json({ error: "Failed to create or retrieve conversation" });
-          }
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    // Ensure conversation exists before proceeding
-    if (!conversation || !conversation._id) {
-      return res.status(500).json({ error: "Invalid conversation state" });
-    }
+    const recipientLower = recipient.toLowerCase();
 
     // Create message
     const message = new Message({
-      conversationId: conversation._id,
-      sender: sender.toLowerCase(),
-      recipient: recipient.toLowerCase(),
+      sender,
+      recipient: recipientLower,
       content,
+      transfer: 'none',
     });
 
     await message.save();
 
-    // Update conversation
+    // Update or create conversation
+    const participants = [sender.toLowerCase(), recipientLower].sort();
+    const participantsKey = participants.join('_');
+
+    let conversation = await Conversation.findOne({ participantsKey });
+
+    if (!conversation) {
+      conversation = new Conversation({ participants });
+      await conversation.save();
+    }
+
     conversation.lastMessage = message._id;
-    conversation.updatedAt = new Date();
+    conversation.lastMessageTime = new Date();
     await conversation.save();
 
     res.status(201).json({
-      _id: conversation._id,
-      participants: conversation.participants,
-      lastMessage: message._id,
-      updatedAt: conversation.updatedAt,
-    });
-  })
-);
-
-/**
- * @route GET /api/users/:address
- * @desc Get user profile by address
- * @access Public
- */
-router.get(
-  "/:address",
-  asyncHandler(async (req, res) => {
-    const { address } = req.params;
-    const user = await User.findOne({ address: address.toLowerCase() });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json({
-      user: {
-        address: user.address,
-        username: user.username,
-        avatar: user.avatar,
-        bio: user.bio,
-        isOnline: user.isOnline,
-        lastSeen: user.lastSeen,
-      },
-    });
-  })
-);
-
-/**
- * @route PUT /api/users/profile
- * @desc Update user profile
- * @access Private
- */
-router.put(
-  "/profile",
-  authMiddleware,
-  asyncHandler(async (req, res) => {
-    const { username, avatar, bio } = req.body;
-    const address = req.userAddress;
-
-    const user = await User.findOne({ address });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    if (username) user.username = username;
-    if (avatar) user.avatar = avatar;
-    if (bio !== undefined) user.bio = bio;
-
-    await user.save();
-
-    res.json({
       success: true,
-      user: {
-        address: user.address,
-        username: user.username,
-        avatar: user.avatar,
-        bio: user.bio,
+      message: {
+        _id: message._id,
+        sender: message.sender,
+        recipient: message.recipient,
+        content: message.content,
+        transfer: message.transfer,
+        createdAt: message.createdAt,
       },
     });
-  })
-);
-
-/**
- * @route GET /api/users/search
- * @desc Search users by username or address
- * @access Public
- */
-router.get(
-  "/search/:query",
-  asyncHandler(async (req, res) => {
-    const { query } = req.params;
-    const limit = req.query.limit || 10;
-
-    const results = await User.find({
-      $or: [
-        { address: { $regex: query, $options: "i" } },
-        { username: { $regex: query, $options: "i" } },
-      ],
-    })
-      .limit(parseInt(limit));
-
-    res.json({ results });
-  })
-);
-
-/**
- * @route GET /api/users/me
- * @desc Get current user profile
- * @access Private
- */
-router.get(
-  "/",
-  authMiddleware,
-  asyncHandler(async (req, res) => {
-    const user = await User.findOne({ address: req.userAddress });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json({ user });
   })
 );
 

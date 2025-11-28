@@ -22,7 +22,7 @@ function NewConversation({ onClose, onConversationStart }) {
     try {
       setIsSearching(true);
       const response = await userApi.searchUsers(query, 10);
-      setSearchResults(response.data.results || []);
+      setSearchResults(response.data.users || []);
     } catch (error) {
       console.error('Search error:', error);
       setSearchResults([]);

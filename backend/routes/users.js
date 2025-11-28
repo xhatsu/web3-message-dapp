@@ -7,54 +7,6 @@ const Conversation = require('../models/Conversation');
 const authMiddleware = require('../middleware/auth');
 
 /**
- * @route GET /api/users/:address
- * @desc Get user info by address
- * @access Private
- */
-router.get(
-  '/:address',
-  authMiddleware,
-  asyncHandler(async (req, res) => {
-    const address = req.params.address?.toLowerCase();
-
-    if (!address) {
-      return res.status(400).json({ error: 'Address is required' });
-    }
-
-    const user = await User.findOne({ address })
-      .select('address username avatar bio isOnline createdAt updatedAt')
-      .lean();
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json({ user });
-  })
-);
-
-/**
- * @route GET /api/users
- * @desc Get current user info
- * @access Private
- */
-router.get(
-  '/',
-  authMiddleware,
-  asyncHandler(async (req, res) => {
-    const user = await User.findOne({ address: req.userAddress })
-      .select('address username avatar bio isOnline createdAt updatedAt')
-      .lean();
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json({ user });
-  })
-);
-
-/**
  * @route GET /api/users/search/:query
  * @desc Search users by address or username
  * @access Private
@@ -81,6 +33,54 @@ router.get(
       .lean();
 
     res.json({ users });
+  })
+);
+
+/**
+ * @route GET /api/users
+ * @desc Get current user info
+ * @access Private
+ */
+router.get(
+  '/',
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const user = await User.findOne({ address: req.userAddress })
+      .select('address username avatar bio isOnline createdAt updatedAt')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user });
+  })
+);
+
+/**
+ * @route GET /api/users/:address
+ * @desc Get user info by address
+ * @access Private
+ */
+router.get(
+  '/:address',
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const address = req.params.address?.toLowerCase();
+
+    if (!address) {
+      return res.status(400).json({ error: 'Address is required' });
+    }
+
+    const user = await User.findOne({ address })
+      .select('address username avatar bio isOnline createdAt updatedAt')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user });
   })
 );
 

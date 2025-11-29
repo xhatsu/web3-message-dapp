@@ -107,15 +107,15 @@ function Login() {
             <div className="info-steps">
               <div className="step">
                 <div className="step-icon">1</div>
-                Connect
+                Connect Wallet
               </div>
               <div className="step">
                 <div className="step-icon">2</div>
-                Sign
+                Sign Request
               </div>
               <div className="step">
                 <div className="step-icon">3</div>
-                Chat
+                Start Interacting
               </div>
             </div>
           </div>

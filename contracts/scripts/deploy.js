@@ -3,27 +3,38 @@ const fs = require("fs");
 const path = require("path");
 
 async function main() {
-  console.log("Deploying WebMessage contract...");
+  console.log("Deploying Web3 Message contracts...");
 
   try {
     // Get deployer account
     const [deployer] = await hre.ethers.getSigners();
-    console.log("Deploying contract with account:", deployer.address);
+    console.log("Deploying contracts with account:", deployer.address);
 
-    // Deploy contract
+    // Deploy WebMessage contract
     const WebMessage = await hre.ethers.getContractFactory("WebMessage");
     const webMessage = await WebMessage.deploy();
-
     await webMessage.waitForDeployment();
-    const contractAddress = await webMessage.getAddress();
+    const webMessageAddress = await webMessage.getAddress();
+    console.log("✓ WebMessage deployed to:", webMessageAddress);
 
-    console.log("WebMessage deployed to:", contractAddress);
+    // Deploy WebMessageNFT contract
+    const WebMessageNFT = await hre.ethers.getContractFactory("WebMessageNFT");
+    const webMessageNFT = await WebMessageNFT.deploy();
+    await webMessageNFT.waitForDeployment();
+    const nftAddress = await webMessageNFT.getAddress();
+    console.log("✓ WebMessageNFT deployed to:", nftAddress);
 
     // Save deployment info
     const deploymentInfo = {
-      contractAddress,
+      webMessage: {
+        contractAddress: webMessageAddress,
+        deploymentTime: new Date().toISOString(),
+      },
+      webMessageNFT: {
+        contractAddress: nftAddress,
+        deploymentTime: new Date().toISOString(),
+      },
       deployerAddress: deployer.address,
-      deploymentTime: new Date().toISOString(),
       network: hre.network.name,
       blockNumber: await hre.ethers.provider.getBlockNumber(),
     };
@@ -38,27 +49,39 @@ async function main() {
       JSON.stringify(deploymentInfo, null, 2)
     );
 
-    console.log("Deployment info saved to deployments/", hre.network.name + ".json");
+    console.log("✓ Deployment info saved to deployments/" + hre.network.name + ".json");
 
-    // Save ABI and contract info for frontend
+    // Save ABIs for frontend
     const artifactsPath = path.join(__dirname, "../artifacts");
-    const abiPath = path.join(
+    
+    const webMessageAbiPath = path.join(
       artifactsPath,
       "contracts/WebMessage.sol/WebMessage.json"
     );
-
-    if (fs.existsSync(abiPath)) {
-      const contractJson = JSON.parse(fs.readFileSync(abiPath, "utf8"));
-      const abi = contractJson.abi;
-
+    if (fs.existsSync(webMessageAbiPath)) {
+      const contractJson = JSON.parse(fs.readFileSync(webMessageAbiPath, "utf8"));
       fs.writeFileSync(
         path.join(deploymentPath, "WebMessage.abi.json"),
-        JSON.stringify(abi, null, 2)
+        JSON.stringify(contractJson.abi, null, 2)
       );
-      console.log("ABI saved to deployments/WebMessage.abi.json");
+      console.log("✓ WebMessage ABI saved");
     }
 
-    return contractAddress;
+    const nftAbiPath = path.join(
+      artifactsPath,
+      "contracts/WebMessageNFT.sol/WebMessageNFT.json"
+    );
+    if (fs.existsSync(nftAbiPath)) {
+      const nftJson = JSON.parse(fs.readFileSync(nftAbiPath, "utf8"));
+      fs.writeFileSync(
+        path.join(deploymentPath, "WebMessageNFT.abi.json"),
+        JSON.stringify(nftJson.abi, null, 2)
+      );
+      console.log("✓ WebMessageNFT ABI saved");
+    }
+
+    console.log("\n✅ All contracts deployed successfully!");
+    return { webMessageAddress, nftAddress };
   } catch (error) {
     console.error("Deployment failed:", error);
     process.exitCode = 1;

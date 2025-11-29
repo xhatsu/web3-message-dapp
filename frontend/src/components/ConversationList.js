@@ -26,7 +26,7 @@ function ConversationList({ conversations, selectedUser, onSelectUser }) {
               <img src={conv.otherUser.avatar} alt={conv.otherUser.username} />
             ) : (
               <div className="avatar-placeholder">
-                {conv.otherUser.address.slice(2, 4).toUpperCase()}
+                {/*conv.otherUser.address.slice(2, 4).toUpperCase()*/}
               </div>
             )}
           </div>
@@ -35,7 +35,7 @@ function ConversationList({ conversations, selectedUser, onSelectUser }) {
             <div className="conversation-header">
               <h4 className="conversation-name">
                 {conv.otherUser.username ||
-                  `${conv.otherUser.address.slice(0, 10)}...`}
+                  `${conv.otherUser.address}...`}
               </h4>
               {conv.lastMessage && (
                 <span className="conversation-time">

@@ -248,7 +248,7 @@ export const sendTokenWithWallet = async (recipientAddress, amount) => {
   }
 };
 
-export const sendNFTWithWallet = async (nftContractAddress, tokenId) => {
+export const sendNFTWithWallet = async (recipientAddress, tokenId, contractAddress) => {
   try {
     // Ensure wallet is connected
     await ensureWalletConnected();
@@ -260,13 +260,13 @@ export const sendNFTWithWallet = async (nftContractAddress, tokenId) => {
     const signerAddress = await signer.getAddress();
     const encodedData = iface.encodeFunctionData('safeTransferFrom', [
       signerAddress,
-      nftContractAddress, // recipient
+      recipientAddress,
       tokenId,
     ]);
 
     // This will trigger wallet popup
     const tx = await signer.sendTransaction({
-      to: nftContractAddress,
+      to: contractAddress,
       data: encodedData,
     });
 

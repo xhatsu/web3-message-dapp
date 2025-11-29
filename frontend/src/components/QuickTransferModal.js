@@ -6,6 +6,7 @@ import './QuickTransferModal.css';
 
 function QuickTransferModal({ recipientAddress, transferType, onClose, onTransferSent }) {
   const [amount, setAmount] = useState('');
+  const [contractAddress, setContractAddress] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,14 +16,26 @@ function QuickTransferModal({ recipientAddress, transferType, onClose, onTransfe
       setError(null);
       setIsLoading(true);
 
-      if (!amount || amount <= 0) {
-        setError('Please enter a valid amount');
-        return;
-      }
-
       if (!recipientAddress) {
         setError('Recipient address missing');
         return;
+      }
+
+      // Validate based on transfer type
+      if (transferType === 'nft') {
+        if (!contractAddress || !contractAddress.startsWith('0x')) {
+          setError('Please enter a valid NFT contract address (starting with 0x)');
+          return;
+        }
+        if (!amount || amount < 0 || !Number.isInteger(Number(amount))) {
+          setError('Please enter a valid Token ID (integer)');
+          return;
+        }
+      } else {
+        if (!amount || amount <= 0) {
+          setError('Please enter a valid amount');
+          return;
+        }
       }
 
       // Trigger wallet popup and execute transfer
@@ -38,7 +51,8 @@ function QuickTransferModal({ recipientAddress, transferType, onClose, onTransfe
         // Call smart contract to send NFT
         transactionHash = await web3Service.sendNFTWithWallet(
           recipientAddress,
-          amount // This is token ID for NFT
+          amount, // Token ID
+          contractAddress // NFT contract address
         );
       } else if (transferType === 'ether') {
         // Send native ETH
@@ -66,7 +80,7 @@ function QuickTransferModal({ recipientAddress, transferType, onClose, onTransfe
         response = await transferApi.sendNFT(
           recipientAddress,
           message || `Sent NFT #${amount}`,
-          null, // nftAddress - could be fetched from contract
+          contractAddress, // Use the provided contract address
           amount,
           transactionHash
         );
@@ -134,6 +148,22 @@ function QuickTransferModal({ recipientAddress, transferType, onClose, onTransfe
             />
           </div>
 
+          {transferType === 'nft' && (
+            <div className="form-group">
+              <label>NFT Contract Address</label>
+              <input
+                type="text"
+                placeholder="0x..."
+                value={contractAddress}
+                onChange={(e) => setContractAddress(e.target.value)}
+                disabled={isLoading}
+              />
+              {contractAddress && !contractAddress.startsWith('0x') && (
+                <small style={{ color: '#ff6b6b' }}>Must start with 0x</small>
+              )}
+            </div>
+          )}
+
           <div className="form-group">
             <label>Message (optional)</label>
             <input
@@ -159,7 +189,7 @@ function QuickTransferModal({ recipientAddress, transferType, onClose, onTransfe
             </button>
             <button
               onClick={handleQuickTransfer}
-              disabled={isLoading || !amount}
+              disabled={isLoading || !amount || (transferType === 'nft' && !contractAddress)}
               className="send-btn"
             >
               {isLoading ? (

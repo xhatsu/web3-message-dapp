@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-11-29T03:39:50.487Z",
+  "tokenId": "0",
+  "name": "MyNFT",
+  "symbol": "TEST",
+  "metadataUri": "https://maroon-past-rabbit-425.mypinata.cloud/ipfs/bafybeibv26l65eibptls3gcod6p37dpgqccnxvt7lggx3wn2f4wiefmgza",
+  "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "contractAddress": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  "transactionHash": "0x8bcf87be1adbf67497f5dcccf2e4c014d6b8f9ccf5f47c05d04dad2aa73ce678",
+  "blockNumber": 3,
+  "network": "localhost"
+}

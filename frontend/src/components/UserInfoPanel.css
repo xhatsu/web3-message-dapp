@@ -3,7 +3,7 @@
   border-radius: 12px;
   padding: 16px;
   margin: 12px;
-  color: white;
+  color: black;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
 }
 
@@ -14,6 +14,7 @@
   margin-bottom: 16px;
   font-weight: 600;
   font-size: 14px;
+  color: white;
 }
 
 .panel-header h3 {
@@ -57,6 +58,7 @@
 
 .address-text {
   flex: 1;
+  color: black;
 }
 
 .copy-btn {

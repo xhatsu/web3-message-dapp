@@ -1,108 +1,359 @@
+/* Reset & Fonts */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 .login-container {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Modern Dark Gradient Background */
+  background: radial-gradient(circle at top left, #1a2980, #26d0ce); /* Fallback */
+  background: radial-gradient(circle at 0% 0%, #2c3e50 0%, #000000 100%);
+  background-size: 200% 200%;
+  animation: gradientBG 15s ease infinite;
   padding: 20px;
+  color: white;
 }
 
+/* Glassmorphism Card */
 .login-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
   width: 100%;
-  max-width: 500px;
+  max-width: 460px;
   overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
 .login-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 40px 20px;
+  padding: 40px 30px 20px;
   text-align: center;
 }
 
 .login-header h1 {
   font-size: 32px;
-  margin-bottom: 8px;
+  margin: 0 0 10px;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
 
 .login-header p {
-  font-size: 14px;
-  opacity: 0.9;
+  font-size: 15px;
+  color: #a0a0a0;
+  margin: 0;
 }
 
 .login-content {
-  padding: 40px 30px;
+  padding: 20px 30px 40px;
 }
 
-.wallet-selector {
-  margin-bottom: 20px;
+/* Wallet Grid (Replaces Select) */
+.wallet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
-.wallet-selector label {
-  display: block;
+.wallet-option {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wallet-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.wallet-option.selected {
+  border-color: #4facfe;
+  background: rgba(79, 172, 254, 0.1);
+  box-shadow: 0 0 15px rgba(79, 172, 254, 0.2);
+}
+
+.wallet-option-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.wallet-option-name {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
 }
 
-.wallet-select {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-  background: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
-}
-
-.wallet-select:hover:not(:disabled) {
-  border-color: #667eea;
-}
-
-.wallet-select:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.wallet-select:disabled {
-  background: #f5f5f5;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
+/* Connect Button */
 .connect-button {
   width: 100%;
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 16px;
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  color: #000;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
 }
 
 .connect-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 242, 254, 0.5);
 }
 
 .connect-button:disabled {
-  opacity: 0.7;
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #000;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Info Section */
+.info-section {
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: #888;
+}
+
+.step-icon {
+  background: rgba(255, 255, 255, 0.05);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  font-size: 14px;
+  color: #fff;
+}
+
+/* Footer */
+.login-footer {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.login-footer a {
+  color: #4facfe;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+/* Error */
+.error-message {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  color: #ff453a;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}/* --- Global & Container --- */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  /* Deep Blue/Black Gradient (Matching Chat.css) */
+  background: radial-gradient(circle at top left, #001e3c, #000000);
+  background-size: 200% 200%;
+  padding: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #e0e0e0;
+}
+
+/* --- Glass Card --- */
+.login-card {
+  /* Dark Glass Style */
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 480px;
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.login-header {
+  padding: 40px 30px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.login-header h1 {
+  font-size: 32px;
+  margin: 0 0 10px;
+  font-weight: 800;
+  /* Gradient Text Effect */
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.login-header p {
+  font-size: 15px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* --- Content --- */
+.login-content {
+  padding: 30px 30px 40px;
+}
+
+/* --- Wallet Selector --- */
+.wallet-selector {
+  margin-bottom: 25px;
+}
+
+.wallet-selector label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #4facfe; /* Neon Blue Label */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wallet-select {
+  width: 100%;
+  padding: 14px 16px;
+  /* Dark Glass Input */
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  color: white;
+  cursor: pointer;
+  appearance: none; /* Removes default styling */
+  /* Custom Arrow Icon */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234facfe%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px top 50%;
+  background-size: 12px auto;
+  margin-bottom: 20px;
+}
+
+.wallet-select:hover:not(:disabled) {
+  border-color: #4facfe;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.wallet-select:focus {
+  outline: none;
+  border-color: #00f2fe;
+  box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.2);
+}
+
+.wallet-select:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* --- Connect Button --- */
+.connect-button {
+  width: 100%;
+  padding: 16px;
+  /* Electric Blue Gradient */
+  background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(0, 97, 255, 0.4);
+  /* Removed transition for snappy feel */
+}
+
+.connect-button:hover:not(:disabled) {
+  box-shadow: 0 8px 25px rgba(0, 97, 255, 0.6);
+  filter: brightness(1.1);
+}
+
+.connect-button:disabled {
+  background: #334155;
+  color: #94a3b8;
+  opacity: 1;
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -110,10 +361,11 @@
   font-size: 20px;
 }
 
+/* --- Spinner --- */
 .spinner {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
@@ -121,59 +373,67 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
+/* --- Error Message --- */
 .error-message {
-  background: #fee;
-  color: #c33;
-  padding: 12px 16px;
-  border-radius: 6px;
-  margin-bottom: 20px;
+  background: rgba(239, 68, 68, 0.1); /* Red Tint */
+  color: #fca5a5;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 25px;
   font-size: 14px;
-  border-left: 4px solid #c33;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+/* --- Info Section --- */
 .info-section {
-  background: #f9f9f9;
+  background: rgba(255, 255, 255, 0.03);
   padding: 20px;
-  border-radius: 6px;
-  margin-bottom: 20px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .info-section h3 {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   margin-bottom: 12px;
-  color: #333;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 .info-section ol {
   margin-left: 20px;
   font-size: 13px;
-  color: #666;
+  color: #94a3b8;
 }
 
 .info-section li {
   margin-bottom: 8px;
 }
 
+/* --- Footer --- */
 .login-footer {
-  background: #f9f9f9;
+  background: rgba(0, 0, 0, 0.2);
   padding: 20px;
   text-align: center;
   font-size: 13px;
-  color: #666;
+  color: #64748b;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .login-footer a {
-  color: #667eea;
+  color: #4facfe;
   text-decoration: none;
   font-weight: 600;
 }
 
 .login-footer a:hover {
   text-decoration: underline;
+  color: #00f2fe;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { web3Service } from '../services/web3';
-import { Wallet, Loader } from 'lucide-react';
+import { Wallet, Loader, Copy, RefreshCw, Check } from 'lucide-react';
 import './UserInfoPanel.css';
 import { formatUnits } from 'ethers';
 
@@ -10,6 +10,7 @@ function UserInfoPanel() {
   const [balance, setBalance] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (user?.address) {
@@ -24,90 +25,86 @@ function UserInfoPanel() {
       
       const provider = web3Service.getProvider();
       if (!provider) {
-        setError('Wallet not connected');
+        setError('Disconnected');
         return;
       }
 
-      // Get ETH balance (in wei, convert to ETH)
       const balanceWei = await provider.getBalance(user.address);
       const balanceEth = formatUnits(balanceWei, 'ether');
-      //const balanceEth = await provider.formatEthers(balanceWei);
       
       setBalance({
         eth: parseFloat(balanceEth).toFixed(4),
-        usd: (parseFloat(balanceEth) * 2500).toFixed(2), // Approximate ETH price
+        usd: (parseFloat(balanceEth) * 2500).toFixed(2), // Mock price for demo
       });
     } catch (err) {
       console.error('Failed to fetch balance:', err);
-      setError('Unable to fetch balance');
+      setError('Error');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleCopy = () => {
+    if (user?.address) {
+      navigator.clipboard.writeText(user.address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="user-info-panel">
+      {/* Header with Refresh Button included */}
       <div className="panel-header">
-        <Wallet size={18} />
-        <h3>Wallet Info</h3>
+        <div className="header-left">
+            <Wallet size={16} color="#4facfe" />
+            <h3>My Wallet</h3>
+        </div>
+        <button 
+            className="header-refresh-btn" 
+            onClick={fetchBalance}
+            disabled={isLoading}
+            title="Refresh Balance"
+        >
+            <RefreshCw size={14} className={isLoading ? "spinning" : ""} />
+        </button>
       </div>
 
       <div className="panel-content">
         {/* Address Section */}
         <div className="info-section">
-          <label>Address</label>
+          {/* Label removed to save space, icon implies context */}
           <div className="address-display">
             <span className="address-text">{user?.address}</span>
             <button
               className="copy-btn"
-              onClick={() => navigator.clipboard.writeText(user?.address)}
+              onClick={handleCopy}
               title="Copy address"
             >
-              📋
+              {copied ? <Check size={12} color="#4ade80"/> : <Copy size={12} />}
             </button>
           </div>
         </div>
 
         {/* Balance Section */}
         <div className="info-section">
-          <label>ETH Balance</label>
           {isLoading ? (
             <div className="loading-balance">
-              <Loader size={16} className="spinning" />
-              <span>Loading...</span>
+              <Loader size={12} className="spinning" />
+              <span>Syncing...</span>
             </div>
           ) : error ? (
             <div className="error-balance">
-              <span>{error}</span>
-              <button 
-                className="retry-btn" 
-                onClick={fetchBalance}
-                title="Retry"
-              >
-                🔄
-              </button>
+              <span>Offline</span>
+              <button className="retry-btn" onClick={fetchBalance}><RefreshCw size={10}/></button>
             </div>
           ) : balance ? (
             <div className="balance-display">
-              <div className="balance-value">
-                <span className="eth-amount">{balance.eth} ETH</span>
-              </div>
-              <div className="balance-usd">
-                ≈ ${balance.usd}
-              </div>
+              <span className="eth-amount">{balance.eth} ETH</span>
+              <span className="balance-usd">≈ ${balance.usd}</span>
             </div>
           ) : null}
         </div>
-
-        {/* Refresh Button */}
-        <button 
-          className="refresh-btn"
-          onClick={fetchBalance}
-          disabled={isLoading}
-          title="Refresh balance"
-        >
-          {isLoading ? <Loader size={16} className="spinning" /> : '🔄 Refresh'}
-        </button>
       </div>
     </div>
   );

@@ -1,30 +1,48 @@
+/* --- Global & Layout --- */
 .chat-container {
   display: flex;
   height: 100vh;
-  background: #fff;
+  /* Deep Blue/Black Gradient Background */
+  background: radial-gradient(circle at top left, #001e3c, #000000);
+  background-size: 200% 200%;
+  color: #e0e0e0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
 }
 
+/* --- Sidebar --- */
 .chat-sidebar {
-  width: 300px;
-  background: #fff;
-  border-right: 1px solid #e0e0e0;
+  width: 320px; /* Slightly wider for better spacing */
+  /* Glass Effect */
+  background: rgba(0, 30, 60, 0.6); 
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  z-index: 10;
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-header h2 {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   margin: 0;
+  color: #fff;
+  letter-spacing: -0.5px;
+  /* Gradient Text Effect */
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .header-buttons {
@@ -33,27 +51,37 @@
   align-items: center;
 }
 
-.header-btn {
-  background: #667eea;
+/* --- Buttons (Header & New Message) --- */
+.header-btn,
+.new-message-btn {
+  /* Electric Blue Gradient */
+  background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
   color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   cursor: pointer;
-  transition: all 0.3s ease;
   border: none;
+  box-shadow: 0 4px 12px rgba(0, 97, 255, 0.3);
+  
+  /* REMOVED: transition: all 0.3s ease; (For snappy feel) */
 }
 
-.header-btn:hover:not(:disabled) {
-  background: #764ba2;
+.header-btn:hover:not(:disabled),
+.new-message-btn:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 6px 16px rgba(0, 97, 255, 0.5);
 }
 
 .header-btn:disabled {
-  opacity: 0.6;
+  background: #334155;
+  color: #64748b;
+  opacity: 1;
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -62,85 +90,93 @@
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.new-message-btn {
-  background: #667eea;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.new-message-btn:hover {
-  background: #764ba2;
-}
-
+/* --- User Info --- */
 .user-info {
-  padding: 15px 20px;
-  background: #f9f9f9;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 13px;
 }
 
 .user-address {
-  color: #666;
-  font-family: monospace;
+  color: #4facfe; /* Neon Blue */
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(79, 172, 254, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
   word-break: break-all;
+  border: 1px solid rgba(79, 172, 254, 0.2);
 }
 
+/* --- Conversations List --- */
 .conversations-wrapper {
   flex: 1;
   overflow-y: auto;
 }
 
+/* Custom Dark Scrollbar */
+.conversations-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.conversations-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+.conversations-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+.conversations-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .conversations-wrapper .loading,
 .conversations-wrapper .empty-state {
-  padding: 30px 20px;
+  padding: 40px 20px;
   text-align: center;
-  color: #999;
+  color: #8899a6;
 }
 
 .empty-state .small {
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 8px;
+  opacity: 0.6;
 }
 
+/* --- Logout Button --- */
 .logout-btn {
-  background: #fee;
-  color: #c33;
-  border-bottom: 1px solid #e0e0e0;
+  background: rgba(255, 50, 50, 0.05); /* Very subtle red tint */
+  color: #ff6b6b;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 15px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  padding: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  /* REMOVED transition */
 }
 
 .logout-btn:hover {
-  background: #fdd;
+  background: rgba(255, 50, 50, 0.15);
+  color: #ff4d4d;
 }
 
+/* --- Main Chat Area --- */
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Semi-transparent overlay to separate from background slightly */
+  background: rgba(0, 0, 0, 0.2); 
+  position: relative;
 }
 
 .chat-empty {
@@ -149,25 +185,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: #8899a6;
 }
 
 .empty-illustration {
-  font-size: 64px;
+  font-size: 72px;
   margin-bottom: 20px;
-  opacity: 0.5;
+  opacity: 0.3;
+  filter: grayscale(100%);
 }
 
 .chat-empty h3 {
-  font-size: 20px;
-  color: #666;
-  margin-bottom: 8px;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: 600;
 }
 
 .chat-empty p {
-  font-size: 14px;
+  font-size: 15px;
+  color: #a0a0a0;
 }
 
+/* --- Responsive --- */
 @media (max-width: 768px) {
   .chat-container {
     flex-direction: column;
@@ -175,9 +215,11 @@
 
   .chat-sidebar {
     width: 100%;
-    max-height: 40vh;
+    height: 35vh; /* Occupy top part of mobile screen */
+    max-height: none;
+    min-height: 250px;
     border-right: none;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .chat-main {

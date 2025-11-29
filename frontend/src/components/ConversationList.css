@@ -1,26 +1,47 @@
 .conversation-list {
   display: flex;
   flex-direction: column;
+  padding: 10px;
+  gap: 4px; /* Spacing between items */
 }
 
 .conversation-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 14px;
+  border-radius: 12px; /* Rounded corners for floating feel */
   cursor: pointer;
-  transition: background-color 0.2s ease;
   position: relative;
+  border: 1px solid transparent; /* Prevents layout shift on active state */
+  /* Removed transition for instant feedback */
 }
 
+/* Hover State */
 .conversation-item:hover {
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Active State (Selected Conversation) */
 .conversation-item.active {
-  background-color: #f0f0ff;
-  border-left: 3px solid #667eea;
+  /* Subtle Blue Gradient */
+  background: linear-gradient(90deg, rgba(0, 97, 255, 0.15) 0%, rgba(0, 97, 255, 0.02) 100%);
+  border-color: rgba(0, 97, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional: Glowing left indicator for active state */
+.conversation-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  width: 3px;
+  background-color: #4facfe;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 8px rgba(79, 172, 254, 0.8);
 }
 
 .conversation-avatar {
@@ -28,9 +49,10 @@
   height: 48px;
   border-radius: 50%;
   overflow: hidden;
-  background: #e0e0e0;
+  background: rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
   position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .conversation-avatar img {
@@ -45,10 +67,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Electric Blue Gradient */
+  background: linear-gradient(135deg, #0061ff 0%, #60efff 100%);
   color: white;
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
 }
 
 .conversation-info {
@@ -66,36 +90,52 @@
 .conversation-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #fff; /* White text */
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* Highlight name if active */
+.conversation-item.active .conversation-name {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 97, 255, 0.3);
+}
+
 .conversation-time {
-  font-size: 12px;
-  color: #999;
+  font-size: 11px;
+  color: #64748b; /* Muted slate */
   white-space: nowrap;
   margin-left: 8px;
+  font-weight: 500;
+}
+
+.conversation-item.active .conversation-time {
+  color: #4facfe; /* Blue when active */
 }
 
 .conversation-preview {
   font-size: 13px;
-  color: #666;
+  color: #94a3b8; /* Light gray */
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.conversation-item:hover .conversation-preview {
+  color: #cbd5e1; /* Lighter on hover */
+}
+
 .online-indicator {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 2px;
+  right: 2px;
   width: 12px;
   height: 12px;
-  background: #4caf50;
-  border: 2px solid white;
+  background: #00f2fe; /* Cyan/Neon */
+  border: 2px solid #0f172a; /* Match the dark background color roughly */
   border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
 }

@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { web3Service } from '../services/web3';
-import { Wallet, Loader, Copy, RefreshCw, Check } from 'lucide-react';
+import { Wallet, Loader, Edit2, RotateCcw, Copy, Check } from 'lucide-react';
+import EditProfileModal from './EditProfileModal';
 import './UserInfoPanel.css';
 import { formatUnits } from 'ethers';
 
 function UserInfoPanel() {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
+  
   const [balance, setBalance] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  
+  // State for the Edit Profile Modal
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (user?.address) {
@@ -29,12 +34,13 @@ function UserInfoPanel() {
         return;
       }
 
+      // Get ETH balance
       const balanceWei = await provider.getBalance(user.address);
       const balanceEth = formatUnits(balanceWei, 'ether');
       
       setBalance({
         eth: parseFloat(balanceEth).toFixed(4),
-        usd: (parseFloat(balanceEth) * 2500).toFixed(2), // Mock price for demo
+        usd: (parseFloat(balanceEth) * 2500).toFixed(2), // Approximate price
       });
     } catch (err) {
       console.error('Failed to fetch balance:', err);
@@ -42,6 +48,11 @@ function UserInfoPanel() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleUpdateSuccess = (updatedUser) => {
+    // Update local state with new profile info
+    setUser({ ...user, ...updatedUser });
   };
 
   const handleCopy = () => {
@@ -54,26 +65,35 @@ function UserInfoPanel() {
 
   return (
     <div className="user-info-panel">
-      {/* Header with Refresh Button included */}
+      {/* HEADER: Title + Actions (Refresh & Edit) */}
       <div className="panel-header">
         <div className="header-left">
-            <Wallet size={16} color="#4facfe" />
-            <h3>My Wallet</h3>
+            <Wallet size={14} color="#4facfe" />
+            <h3>WALLET</h3>
         </div>
-        <button 
-            className="header-refresh-btn" 
-            onClick={fetchBalance}
-            disabled={isLoading}
-            title="Refresh Balance"
-        >
-            <RefreshCw size={14} className={isLoading ? "spinning" : ""} />
-        </button>
+        
+        <div className="header-actions">
+            <button 
+                className="action-btn" 
+                onClick={fetchBalance}
+                disabled={isLoading}
+                title="Refresh Balance"
+            >
+                <RotateCcw size={14} className={isLoading ? "spinning" : ""} />
+            </button>
+            <button 
+                className="action-btn" 
+                onClick={() => setIsEditModalOpen(true)}
+                title="Edit Profile"
+            >
+                <Edit2 size={14} />
+            </button>
+        </div>
       </div>
 
       <div className="panel-content">
-        {/* Address Section */}
+        {/* Address Row */}
         <div className="info-section">
-          {/* Label removed to save space, icon implies context */}
           <div className="address-display">
             <span className="address-text">{user?.address}</span>
             <button
@@ -86,7 +106,7 @@ function UserInfoPanel() {
           </div>
         </div>
 
-        {/* Balance Section */}
+        {/* Balance Row */}
         <div className="info-section">
           {isLoading ? (
             <div className="loading-balance">
@@ -96,7 +116,7 @@ function UserInfoPanel() {
           ) : error ? (
             <div className="error-balance">
               <span>Offline</span>
-              <button className="retry-btn" onClick={fetchBalance}><RefreshCw size={10}/></button>
+              <button className="retry-btn" onClick={fetchBalance}><RotateCcw size={10} /></button>
             </div>
           ) : balance ? (
             <div className="balance-display">
@@ -106,6 +126,14 @@ function UserInfoPanel() {
           ) : null}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        currentUser={user}
+        onUpdateSuccess={handleUpdateSuccess}
+      />
     </div>
   );
 }

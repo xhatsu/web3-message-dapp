@@ -8,11 +8,11 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   
   /* Compact Spacing */
-  padding: 12px 16px;
+  padding: 12px;
   margin: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   color: white;
 }
 
@@ -24,18 +24,19 @@
   padding-bottom: 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 2px;
+  height: 24px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .panel-header h3 {
   margin: 0;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   /* Gradient Text */
@@ -45,8 +46,15 @@
   color: transparent;
 }
 
-/* Tiny Refresh Button in Header */
-.header-refresh-btn {
+/* Header Actions Container */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Common style for header icons (Edit & Refresh) */
+.action-btn {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -56,15 +64,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s;
+  transition: color 0.1s, background-color 0.1s;
 }
 
-.header-refresh-btn:hover:not(:disabled) {
+.action-btn:hover:not(:disabled) {
   color: #4facfe;
   background: rgba(255, 255, 255, 0.05);
 }
 
-.header-refresh-btn:disabled {
+.action-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -73,33 +81,22 @@
 .panel-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-/* Generic Section Info */
-.info-section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.info-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: #4facfe; /* Neon Blue */
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-left: 2px;
+  gap: 6px;
 }
 
 /* --- Address Box --- */
+.info-section {
+  display: flex;
+  flex-direction: column;
+}
+
 .address-display {
   display: flex;
   align-items: center;
   gap: 8px;
   /* Dark Input Style */
   background: rgba(0, 0, 0, 0.3);
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -149,7 +146,7 @@
 }
 
 .eth-amount {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   text-shadow: 0 0 10px rgba(0, 97, 255, 0.4);
@@ -168,7 +165,7 @@
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.03);
-  padding: 8px;
+  padding: 6px 10px;
   border-radius: 6px;
   font-size: 11px;
   color: #94a3b8;

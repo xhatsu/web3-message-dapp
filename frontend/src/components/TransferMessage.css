@@ -1,6 +1,6 @@
 .transfer-message {
-  background-color: #f9f9f9;
-  border: 2px solid #e0e0e0;
+  background-color: #2c2c2c; /* Dark card bg */
+  border: 2px solid #333;
   border-radius: 10px;
   padding: 14px;
   margin: 8px 0;
@@ -8,13 +8,13 @@
 }
 
 .transfer-message.own {
-  background-color: #e3f2fd;
-  border-color: #4169e1;
+  background-color: rgba(65, 105, 225, 0.15); /* Transparent blue tint */
+  border-color: #4169e1; /* Keep original border color for distinction */
 }
 
 .transfer-message.other {
-  background-color: #f5f5f5;
-  border-color: #ddd;
+  background-color: #2c2c2c;
+  border-color: #333;
 }
 
 .transfer-header {
@@ -43,7 +43,7 @@
 .transfer-label {
   font-weight: 600;
   font-size: 14px;
-  color: #1a1a1a;
+  color: #e0e0e0; /* Light text */
   margin-bottom: 4px;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .transfer-content {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.2); /* Darken content area */
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -103,13 +103,13 @@
 .transfer-content p {
   margin: 0;
   font-size: 14px;
-  color: #333;
+  color: #ccc; /* Lighter paragraph text */
   line-height: 1.4;
 }
 
 .transfer-details,
 .transfer-tx {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.2); /* Darken details area */
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 10px;
@@ -133,7 +133,7 @@
 .detail-row > span:first-child,
 .tx-row > span:first-child {
   font-weight: 500;
-  color: #666;
+  color: #999; /* Muted label */
   min-width: 70px;
 }
 
@@ -147,20 +147,21 @@
 
 .detail-value code,
 .tx-value code {
-  background-color: #f0f0f0;
+  background-color: #1a1a1a; /* Dark code block */
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-family: 'Courier New', monospace;
-  color: #666;
+  color: #b0b0b0; /* Code text color */
   word-break: break-all;
+  border: 1px solid #333;
 }
 
 .copy-btn {
   background: none;
   border: none;
   cursor: pointer;
-  color: #4169e1;
+  color: #667eea; /* Brand color */
   padding: 2px 6px;
   display: flex;
   align-items: center;
@@ -171,8 +172,8 @@
 }
 
 .copy-btn:hover {
-  background-color: #f0f0f0;
-  color: #2e52a3;
+  background-color: #333;
+  color: #fff;
 }
 
 .claim-btn {
@@ -193,12 +194,14 @@
 }
 
 .claim-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  background-color: #333;
+  color: #666;
 }
 
 .na-text {
-  color: #999;
+  color: #666;
   font-style: italic;
   font-size: 12px;
 }

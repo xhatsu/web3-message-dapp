@@ -1,6 +1,9 @@
 .conversation-list {
   display: flex;
   flex-direction: column;
+  background: #121212; /* Dark background */
+  height: 100%;
+  border-right: 1px solid #2c2c2c; /* Separator between list and chat */
 }
 
 .conversation-item {
@@ -8,18 +11,19 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #2c2c2c; /* Dark separator */
   cursor: pointer;
   transition: background-color 0.2s ease;
   position: relative;
+  background-color: #121212;
 }
 
 .conversation-item:hover {
-  background-color: #f9f9f9;
+  background-color: #1e1e1e; /* Slightly lighter on hover */
 }
 
 .conversation-item.active {
-  background-color: #f0f0ff;
+  background-color: rgba(102, 126, 234, 0.15); /* Low opacity brand color */
   border-left: 3px solid #667eea;
 }
 
@@ -28,9 +32,10 @@
   height: 48px;
   border-radius: 50%;
   overflow: hidden;
-  background: #e0e0e0;
+  background: #333; /* Darker avatar bg */
   flex-shrink: 0;
   position: relative;
+  border: 1px solid #333;
 }
 
 .conversation-avatar img {
@@ -66,7 +71,7 @@
 .conversation-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #e0e0e0; /* Light text */
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -75,18 +80,23 @@
 
 .conversation-time {
   font-size: 12px;
-  color: #999;
+  color: #888; /* Muted text */
   white-space: nowrap;
   margin-left: 8px;
 }
 
 .conversation-preview {
   font-size: 13px;
-  color: #666;
+  color: #a0a0a0; /* Slightly lighter than typical mute */
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Ensure preview text is visible but distinct on active state */
+.conversation-item.active .conversation-preview {
+  color: #b0b0b0;
 }
 
 .online-indicator {
@@ -95,7 +105,17 @@
   right: 0;
   width: 12px;
   height: 12px;
-  background: #4caf50;
-  border: 2px solid white;
+  background: #4caf50; /* Keep green */
+  border: 2px solid #121212; /* Match background color for cutout effect */
   border-radius: 50%;
+}
+
+/* Adjust indicator border on hover to match new bg */
+.conversation-item:hover .online-indicator {
+  border-color: #1e1e1e;
+}
+
+/* Adjust indicator border on active to match new bg */
+.conversation-item.active .online-indicator {
+  border-color: #1e1e2e; /* Approximate blend of active color */
 }

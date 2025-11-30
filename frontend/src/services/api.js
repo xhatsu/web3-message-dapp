@@ -40,6 +40,7 @@ export const messageApi = {
 export const userApi = {
   getUser: (address) => api.get(`/users/${address}`),
   getCurrentUser: () => api.get('/users'),
+  // Matches backend route: router.put('/profile', ...)
   updateProfile: (username, avatar, bio) =>
     api.put('/users/profile', { username, avatar, bio }),
   searchUsers: (query, limit = 10) =>

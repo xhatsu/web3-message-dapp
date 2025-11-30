@@ -1,7 +1,8 @@
 .app {
   display: flex;
   height: 100vh;
-  background: #fff;
+  background: #121212; /* Dark background */
+  color: #e0e0e0; /* Light text for global inheritance */
 }
 
 .loading {
@@ -9,6 +10,8 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
   font-size: 18px;
-  color: #666;
+  background: #121212; /* Ensure loading screen is dark */
+  color: #e0e0e0; /* Light text */
 }

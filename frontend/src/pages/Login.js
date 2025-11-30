@@ -20,7 +20,7 @@ function Login() {
       setSelectedWallet(wallets[0].id);
     }
   }, []);
-
+  
   const handleConnectWallet = async () => {
     setIsConnecting(true);
     setLocalError(null);

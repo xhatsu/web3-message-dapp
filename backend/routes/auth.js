@@ -85,6 +85,8 @@ router.post(
       user: {
         address: user.address,
         username: user.username,
+        avatar: user.avatar,
+        bio: user.bio,
         isOnline: true,
       },
     });
